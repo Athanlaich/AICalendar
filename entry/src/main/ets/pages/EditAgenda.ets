@@ -22,7 +22,6 @@ struct EditAgenda {
   @State end: string = theTime.now()
   @State color: string = Schedule.COLORS[0]
 
-
   aboutToAppear() {
     const params = router.getParams() as Record<string, string | number>;
     if (params) {
@@ -45,9 +44,10 @@ struct EditAgenda {
         Text('编辑日程')
           .fontSize(30)
           .fontWeight(FontWeight.Bold)
-          .margin({left:20})
+          .margin({ left: 20 })
       }
       .width('100%').height('7%').backgroundColor('#89AFE0')
+
       //Divider().strokeWidth(2).color('#F1F3F5').lineCap(LineCapStyle.Round) //分割线
       Row({ space: 5 }) {
         Image($r('app.media.name'))
@@ -123,28 +123,29 @@ struct EditAgenda {
         }
         .layoutWeight(80)
       }
+
       Row() {
         Text('颜色:')
-          .margin({left:20})
+          .margin({ left: 20 })
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .alignSelf(ItemAlign.Start)
           .layoutWeight(20)
         Row() {
-          ForEach(Schedule.COLORS, (item:string, index:number)=>{
+          ForEach(Schedule.COLORS, (item: string, index: number) => {
             Circle()
               .width(this.color == item ? 40 : 20)
-              .animation({duration:1000, curve:Curve.Ease})
+              .animation({ duration: 1000, curve: Curve.Ease })
               .aspectRatio(1)
               .fill(item)
-              .onClick(()=>{
+              .onClick(() => {
                 this.color = item
               })
           })
         }
         .justifyContent(FlexAlign.SpaceAround)
         .layoutWeight(80)
-        .margin({right:20})
+        .margin({ right: 20 })
       }
       .height(40)
 
@@ -174,20 +175,41 @@ struct EditAgenda {
     .width('100%')
   }
 
+  //检查日程是否冲突
+  async checkScheduleConflict(store: relationalStore.RdbStore, id: number, date: string, startTime: string,
+    endTime: string): Promise<boolean> {
+    //查询条件
+    let query =
+      "SELECT * FROM SCHEDULES WHERE (date == ? ) AND (ID!= ?) AND ((start <= ? AND ? < end) OR (start < ? AND ? <= end) OR (? <= start AND end <= ?))"; //冲突的三种条件
+    //查询参数
+    let params = [date, id, startTime, startTime, endTime, endTime, startTime, endTime];
+    try {
+      // 执行查询并等待结果
+      let result = await store.querySql(query, params);
+      // 检查结果
+      return result.rowCount > 0; //则冲突
+    } catch (error) {
+      console.error("查询出错:", error);
+      return false;
+    }
+  }
+
   //提交日程的函数
   private onSubmit(): void {
     if (this.title == '') {
       promptAction.showToast({ message: '标题不能为空！', bottom: 200 })
       return
     }
-    if (theTime.getHours(this.start) > theTime.getHours(this.end) || (theTime.getHours(this.start)==theTime.getHours(this.end) && theTime.getMinutes(this.start)>=theTime.getMinutes(this.end)) ) {
+    if (theTime.getHours(this.start) > theTime.getHours(this.end) ||
+      (theTime.getHours(this.start) == theTime.getHours(this.end) &&
+        theTime.getMinutes(this.start) >= theTime.getMinutes(this.end))) {
       promptAction.showToast({ message: '时间不正确!', bottom: 200 })
       return
     }
 
     //const store: relationalStore.RdbStore = globalThis.store
     const store: relationalStore.RdbStore = GlobalContext.getInstance().getStore() as relationalStore.RdbStore;
-    if (!store || !store.update) {  //如果store未初始化或 update 方法不可用，打印错误信息并结束函数执行
+    if (!store || !store.update) { //如果store未初始化或 update 方法不可用，打印错误信息并结束函数执行
       console.error('Store is not initialized or update method is not available.');
       return;
     }
@@ -204,7 +226,7 @@ struct EditAgenda {
     }
 
     //检查日程是否冲突
-    this.checkScheduleConflict(store,this.ID,this.date,this.start,this.end)
+    this.checkScheduleConflict(store, this.ID, this.date, this.start, this.end)
       .then(conflict => {
         if (conflict) {
           console.log("存在冲突的日程，不可插入");
@@ -220,13 +242,13 @@ struct EditAgenda {
                 console.error(`Failed to insert data. Code:${err.code}, message:${err.message}`)
                 return
               }
-              console.info(`Succeeded in inserting data. rowId:${rowId}`)  //rowId唯一地标识表中的一行记录
+              console.info(`Succeeded in inserting data. rowId:${rowId}`) //rowId唯一地标识表中的一行记录
               emitter.emit({ eventId: 0 })
               router.back()
             })
-          } else{ //编辑(已有的日程)
+          } else { //编辑(已有的日程)
             const predicates = new relationalStore.RdbPredicates('SCHEDULES')
-            predicates.equalTo('ID', this.ID)   //查询条件predicates，指定要更新的某条记录的ID
+            predicates.equalTo('ID', this.ID) //查询条件predicates，指定要更新的某条记录的ID
             store.update(valueBucket, predicates, (err, rowId) => {
               if (err) {
                 console.error(`Failed to update data. Code:${err.code}, message:${err.message}`);
@@ -241,22 +263,5 @@ struct EditAgenda {
       })
 
 
-  }
-
-  //检查日程是否冲突
-  async checkScheduleConflict(store: relationalStore.RdbStore, id:number, date:string,startTime:string, endTime:string): Promise<boolean> {
-    //查询条件
-    let query = "SELECT * FROM SCHEDULES WHERE (date == ? ) AND (ID!= ?) AND ((start <= ? AND ? < end) OR (start < ? AND ? <= end) OR (? <= start AND end <= ?))";  //冲突的三种条件
-    //查询参数
-    let params = [date,id,startTime,startTime,endTime,endTime,startTime,endTime];
-    try {
-      // 执行查询并等待结果
-      let result = await store.querySql(query, params);
-      // 检查结果
-      return result.rowCount > 0;  //则冲突
-    } catch (error) {
-      console.error("查询出错:", error);
-      return false;
-    }
   }
 }

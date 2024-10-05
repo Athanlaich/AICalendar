@@ -1,14 +1,14 @@
-import {theDate} from '../DateModule/theDate'
-import {theTime} from '../DateModule/theTime'
-import router from '@ohos.router' // 路由模块，用于页面导航
-import { Schedule } from '../DateModule/agendaStruct' // 引入 Schedule 类
+import { theDate } from '../DateModule/theDate'
+import { theTime } from '../DateModule/theTime'
+import router from '@ohos.router'; // 路由模块，用于页面导航
+import { Schedule } from '../DateModule/agendaStruct'; // 引入 Schedule 类
 import { ScheduleColumn } from '../DateModule/ScheduleColumn'
-import notificationManager from '@ohos.notificationManager';
-import WantAgent from '@ohos.app.ability.wantAgent';
-import Want from '@ohos.app.ability.Want';
-import common from '@ohos.app.ability.common';
-import pasteboard from '@ohos.pasteboard';
-import {Reminder} from '../aiability/Reminder';
+import notificationManager from '@ohos.notificationManager'
+import WantAgent from '@ohos.app.ability.wantAgent'
+import Want from '@ohos.app.ability.Want'
+import common from '@ohos.app.ability.common'
+import pasteboard from '@ohos.pasteboard'
+import { Reminder } from '../aiability/Reminder'
 
 
 @Entry
@@ -26,15 +26,16 @@ struct Index {
 
   //菜单
   @Builder
-  MyMenu(){
+  MyMenu() {
     Menu() {
       MenuItem({ startIcon: $r("app.media.kimi"), content: "智能助手" })
         .onClick(() => {
-          router.pushUrl({ url: 'pages/kimi'})// 跳转到智能助手kimi页面
+          router.pushUrl({ url: 'pages/kimi' }) // 跳转到智能助手kimi页面
         })
       MenuItem({ startIcon: $r("app.media.clean"), content: "一键删除" })
     }
   }
+
   // 请求通知授权
   async requestNotificationPermission() {
     let context = getContext(this) as common.UIAbilityContext;
@@ -51,6 +52,7 @@ struct Index {
       console.error(`isNotificationEnabled fail: ${JSON.stringify(err)}`);
     }
   }
+
   //通知栏显示
   async publishNotification() {
     //WantAgentInfo对象
@@ -59,7 +61,7 @@ struct Index {
         {
           bundleName: "com.example.ai_calendar", // 自己应用的bundleName
           abilityName: "AIAbility",
-        }as Want
+        } as Want
       ],
       operationType: WantAgent.OperationType.START_ABILITIES,
       requestCode: 1,
@@ -81,7 +83,7 @@ struct Index {
         id: 1,
         isUnremovable: false,
         tapDismissed: false,
-        notificationSlotType:notificationManager.SlotType.SOCIAL_COMMUNICATION,
+        notificationSlotType: notificationManager.SlotType.SOCIAL_COMMUNICATION,
         wantAgent: agent
       });
       console.log("Notification published successfully.");
@@ -89,6 +91,7 @@ struct Index {
       console.error("Error publishing notification:", error);
     }
   }
+
   // 页面即将显示时执行的方法
   async aboutToAppear() {
     const params = router.getParams() as Record<string, string | boolean>; // 从路由中获取参数
@@ -100,7 +103,7 @@ struct Index {
     let systemPasteboard: pasteboard.SystemPasteboard = pasteboard.getSystemPasteboard();
     let listener = () => {
       console.info('The system pasteboard has changed.');
-      this. publishNotification();
+      this.publishNotification();
     };
     systemPasteboard.on('update', listener);
     ////////////////////////////////
@@ -111,15 +114,25 @@ struct Index {
 
   build() {
     Column() { // 使用 Column 布局
-      Row() {// 导航栏
-        Text('我的日程') // 导航栏左侧文字
+      Row() { // 导航栏
+        Text('我的日程')// 导航栏左侧文字
           .fontSize(30)
           .fontWeight(FontWeight.Bold)
-          .margin({ top: '0.00px', right: '0.00px', bottom: '0.00px', left: '10.00vp' })
+          .margin({
+            top: '0.00px',
+            right: '0.00px',
+            bottom: '0.00px',
+            left: '10.00vp'
+          })
           .align(Alignment.Center)
           .width('40.00%')
           .alignSelf(ItemAlign.Center)
-        Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.End, alignItems: ItemAlign.Center }) {
+        Flex({
+          direction: FlexDirection.Row,
+          wrap: FlexWrap.NoWrap,
+          justifyContent: FlexAlign.End,
+          alignItems: ItemAlign.Center
+        }) {
           Button({ type: ButtonType.Circle }) { // 添加日程按钮
             Image($r("app.media.add"))
               .width('30.00vp')
@@ -127,7 +140,7 @@ struct Index {
           }
           .padding(3)
           .height('35.00vp')
-          .margin({right: 20})
+          .margin({ right: 20 })
           .backgroundColor(this.addBtnPressed ? '#d3d3d3' : Color.White)
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
@@ -137,10 +150,16 @@ struct Index {
             }
           })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/EditAgenda', params: { date: this.date }}) // 跳转到添加日程页面
+            router.pushUrl({ url: 'pages/EditAgenda', params: { date: this.date } }) // 跳转到添加日程页面
           })
-          .margin({ top: '0.00px', right: '40.00vp', bottom: '0.00px', left: '0.00px' })
+          .margin({
+            top: '0.00px',
+            right: '40.00vp',
+            bottom: '0.00px',
+            left: '0.00px'
+          })
           .width('35vp')
+
           Button({ type: ButtonType.Circle }) { // 更多功能按钮
             Image($r("app.media.more"))
               .width(30)
@@ -148,7 +167,12 @@ struct Index {
           }
           .padding(3)
           .height(35)
-          .margin({ top: '0.00px', right: '30.00vp', bottom: '0.00px', left: '0.00px' })
+          .margin({
+            top: '0.00px',
+            right: '30.00vp',
+            bottom: '0.00px',
+            left: '0.00px'
+          })
           .backgroundColor(this.moreBtnPressed ? '#d3d3d3' : Color.White)
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
@@ -162,6 +186,7 @@ struct Index {
         .width('60.00%')
       }
       .width('100%').height('7%').backgroundColor('#89AFE0').padding(10)
+
       Row() {
         Text(theDate.getMonth(theDate.daysInTheSameWeek(this.date)[0]) + '\n月')
           .width('11.00%')
@@ -173,6 +198,7 @@ struct Index {
       }
       .width('100%')
       .height('10%')
+
       Divider()
 
       // 日程内容部分 - 加入滑动效果
@@ -184,7 +210,7 @@ struct Index {
                 ForEach(theTime.HOURS, (item: string, index: number) => {
                   Column() {
                     Divider()
-                    Text(item+':00')
+                    Text(item + ':00')
                       .fontSize(14)
                       .margin({ top: 0, bottom: 0 })
                   }
@@ -197,7 +223,7 @@ struct Index {
               .height('100%')
 
               ForEach(theDate.daysInTheSameWeek(this.date), (item: string, index: number) => {
-                ScheduleColumn({date: item}) // 渲染每一天的日程列
+                ScheduleColumn({ date: item })// 渲染每一天的日程列
                   .layoutWeight(1)
               })
             }
@@ -236,24 +262,25 @@ struct Index {
 
   // 页面进场和离场动画
   pageTransition() {
-    PageTransitionEnter({ type: RouteType.Push, duration: 250 }) // 进场动画
-      .slide(this.enterFromRight ? SlideEffect.Right : SlideEffect.Left) // 根据方向设置滑动效果
+    PageTransitionEnter({ type: RouteType.Push, duration: 250 })// 进场动画
+      .slide(this.enterFromRight ? SlideEffect.Right : SlideEffect.Left)// 根据方向设置滑动效果
       .onEnter((type: RouteType, progress: number) => {
         if (progress > 0.99) {
           router.clear() // 动画完成后清除路由历史
         }
       })
-    PageTransitionExit({ type: RouteType.Push, duration: 250 }) // 离场动画
+    PageTransitionExit({ type: RouteType.Push, duration: 250 })// 离场动画
       .slide(this.exitToRight ? SlideEffect.Right : SlideEffect.Left) // 根据方向设置滑动效果
   }
+
   // 渲染每一天的标题
   @Builder
   DateTitle(date: string) {
     Column() {
-      Text(theDate.WEEKDAYS[theDate.getDay(date)]) // 显示星期几
+      Text(theDate.WEEKDAYS[theDate.getDay(date)])// 显示星期几
         .fontSize(14)
         .fontColor(theDate.isToday(date) ? Color.Black : Color.Gray) // 如果是今天，则字体颜色为黑色，否则为灰色
-      Text(theDate.getDate(date) + '日') // 显示日期
+      Text(theDate.getDate(date) + '日')// 显示日期
         .fontSize(14)
         .fontColor(theDate.isToday(date) ? Color.Black : Color.Gray) // 如果是今天，则字体颜色为黑色，否则为灰色
     }
