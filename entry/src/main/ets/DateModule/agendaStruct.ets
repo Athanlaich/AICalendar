@@ -10,7 +10,7 @@ export class Schedule {
   public date: string = theDate.today(); // 日程日期，初始为当前日期
   public start: string = theTime.now(); // 日程开始时间，初始为当前时间（hh:mm格式）
   public end: string = theTime.now(); // 日程结束时间，初始为当前时间（hh:mm格式）
-  public static COLORS: string[] = ['#ffbc4442', '#ff5c8c65', '#ffdbcf8f', '#ff2a6ad2', 'b39fab']; // 定义颜色数组
+  public static COLORS: string[] = ['#fffad8e3','#fff6dbbb', '#fefaee', '#ffc8ecff', '#ffc7f1d1']; // 定义颜色数组
   public color: string = Schedule.COLORS[0]; // 默认颜色为 COLORS 数组的第一个颜色
 
   // 将日程对象转换为以逗号分隔的字符串
