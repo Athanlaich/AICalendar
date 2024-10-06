@@ -34,6 +34,7 @@ struct EditAgenda {
       this.date = params.date as string || theDate.today() // 如果没有提供日期参数，则使用今天的日期
       this.start = params.start as string || theTime.now() // 如果没有提供开始时间，则使用当前时间
       this.end = params.end as string || theTime.now() // 如果没有提供结束时间，则使用当前时间
+      console.info('ID',this.ID)
     } else {
       console.warn('No parameters found, using default values')
     }
