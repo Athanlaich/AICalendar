@@ -15,6 +15,6 @@ export class Schedule {
 
   // 将日程对象转换为以逗号分隔的字符串
   public toString(): string {
-    return `${this.ID},${this.title},${this.description},${this.place},${this.date},${this.start},${this.end}`//这些应该会存入数据库
+    return `${this.ID},${this.title},${this.description},${this.place},${this.date},${this.start},${this.end},${this.color}`//这些应该会存入数据库
   }
 }

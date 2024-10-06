@@ -5,9 +5,9 @@
         "name": "default",
         "material": {
           "certpath": "C:/Users/19714/.ohos/config/openharmony/default_AI_Calendar_4_4_VgFepX6aMKz3N5qpmgceKUAyJhEcwQN8qeeCFXnhs8o=.cer",
-          "storePassword": "0000001B31F921F88E87A385FF127C28309B35987D82932B0ED9CDCA88477EC9802FA1E6B9A727EB15396A",
+          "storePassword": "0000001B16CA4D35DE81A6A4E4C1F11AA86FE0DB90427D3F3E0D5E4A7F8511461F364842022CB161BDA2B9",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B4EE36E4E634DCBF53FEE548FF126512806995699A01C01E20F3C0A26C209F73CE5732992F9472D",
+          "keyPassword": "0000001B7A233F2D9011E207036715E287553F8A2BDF7E40BEF5333AB39382C88CD6DCCF4852CEE3C510FC",
           "profile": "C:/Users/19714/.ohos/config/openharmony/default_AI_Calendar_4_4_VgFepX6aMKz3N5qpmgceKUAyJhEcwQN8qeeCFXnhs8o=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:/Users/19714/.ohos/config/openharmony/default_AI_Calendar_4_4_VgFepX6aMKz3N5qpmgceKUAyJhEcwQN8qeeCFXnhs8o=.p12"

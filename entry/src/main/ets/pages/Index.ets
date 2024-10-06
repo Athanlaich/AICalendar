@@ -9,7 +9,11 @@ import Want from '@ohos.app.ability.Want'
 import common from '@ohos.app.ability.common'
 import pasteboard from '@ohos.pasteboard'
 import { Reminder } from '../aiability/Reminder'
-
+import relationalStore from '@ohos.data.relationalStore'
+import { GlobalContext } from '../GlobalContext/GlobalContext'
+import promptAction from '@ohos.promptAction'
+import  { BusinessError }  from '@ohos.base'
+import emitter from '@ohos.events.emitter'
 
 @Entry
 @Component
@@ -33,6 +37,42 @@ struct Index {
           router.pushUrl({ url: 'pages/kimi' }) // 跳转到智能助手kimi页面
         })
       MenuItem({ startIcon: $r("app.media.clean"), content: "一键删除" })
+      .onClick(() => {
+          return ActionSheet.show({
+            title: '一键删除',
+            message: '请选择你将对日程表进行的删除操作：',
+            autoCancel: true,
+            confirm: {  //底部按钮
+              value: '取消',
+              action: () => {
+                console.log('取消一键删除操作')
+              }
+            },
+            cancel: () => {},    //屏障层取消
+            alignment: DialogAlignment.Center,
+            offset: { dx: 0, dy: -10 },
+            sheets: [  //操作列表
+              {
+                icon:$r('app.media.one'),
+                title: "删除今天的所有日程",
+                action: () => {
+                  this.deleteSchedule(1)
+                  console.warn(`今天（${this.date}）的所有日程被删除！`)
+                  promptAction.showToast({ message: `今天（${this.date}）的所有日程被删除！`, bottom: 310 })
+                }
+              },
+              {
+                icon:$r('app.media.two'),
+                title: "删除日程表中的所有日程",
+                action: () => {
+                  this.deleteSchedule(2)
+                  console.warn(`日程表中所有日程被删除！`)
+                  promptAction.showToast({ message: `日程表中所有日程被删除！`, bottom: 310 })
+                }
+              }
+            ]
+          })
+        })
     }
   }
 
@@ -185,7 +225,7 @@ struct Index {
         }
         .width('60.00%')
       }
-      .width('100%').height('7%').backgroundColor('#89AFE0').padding(10)
+      .width('100%').height('7%').backgroundColor('#CAF4FF').padding(10)
 
       Row() {
         Text(theDate.getMonth(theDate.daysInTheSameWeek(this.date)[0]) + '\n月')
@@ -280,10 +320,42 @@ struct Index {
       Text(theDate.WEEKDAYS[theDate.getDay(date)])// 显示星期几
         .fontSize(14)
         .fontColor(theDate.isToday(date) ? Color.Black : Color.Gray) // 如果是今天，则字体颜色为黑色，否则为灰色
+        .fontWeight(theDate.isToday(date) ? FontWeight.Bold : FontWeight.Normal)
       Text(theDate.getDate(date) + '日')// 显示日期
         .fontSize(14)
         .fontColor(theDate.isToday(date) ? Color.Black : Color.Gray) // 如果是今天，则字体颜色为黑色，否则为灰色
+        .fontWeight(theDate.isToday(date) ? FontWeight.Bold : FontWeight.Normal)
     }
     .layoutWeight(1) // 布局权重
+  }
+  //删除日程函数
+  deleteSchedule(choice:number,callback?:()=>void):void {
+    const store: relationalStore.RdbStore = GlobalContext.getInstance().getStore() as relationalStore.RdbStore;
+    if (!store || !store.update) {  //如果store未初始化或 update 方法不可用，打印错误信息并结束函数执行
+      console.error('Store is not initialized or update method is not available.');
+    }
+    if(choice == 1){
+      //查询条件
+      let query = "DELETE FROM SCHEDULES WHERE ( date == ? ) ;"   //删除今天日程
+      //查询参数
+      let params = [this.date];
+      store.executeSql(query, params)
+        .then(() => {
+          console.info('Delete done.');
+          emitter.emit({ eventId: 0 });   //发送事件，通知其他页面更新
+        }).catch((err: BusinessError) => {
+        console.error(`ExecuteSql failed, code is ${err.code},message is ${err.message}`);
+      })
+    }else if(choice == 2){
+      let query = "DELETE FROM SCHEDULES " //删除全部日程
+      store.executeSql(query)
+        .then(() => {
+          console.info('Delete done.')
+          emitter.emit({ eventId: 0 });   //发送事件，通知其他页面更新
+        }).catch((err: BusinessError) => {
+         console.error(`ExecuteSql failed, code is ${err.code},message is ${err.message}`);
+      })
+    }
+    return
   }
 }

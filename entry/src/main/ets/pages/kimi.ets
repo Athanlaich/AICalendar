@@ -55,7 +55,7 @@ struct kimi {
             .fontWeight(FontWeight.Bold)
             .margin({ left: 20 })
         }
-      }.width('100%').height('7%').backgroundColor('#B2CAEE')
+      }.width('100%').height('7%').backgroundColor('#ff7fd0e7')
 
       // 消息列表
       Scroll() {
@@ -73,7 +73,7 @@ struct kimi {
                     bottom: '10.00vp',
                     left: '10.00vp'
                   })
-                  .backgroundColor('#D5DEEF')
+                  .backgroundColor('#fff0fafd')
                   .borderRadius(8)
                   .copyOption(CopyOptions.LocalDevice)
                   .textAlign(TextAlign.End)
@@ -134,7 +134,7 @@ struct kimi {
       .edgeEffect(EdgeEffect.Fade)
       .height('83%')
       .width('100%')
-      .backgroundColor('#E4E4E4')
+      .backgroundColor('#65f6f6f6')
       .padding({
         top: '0.00vp',
         right: '25.00vp',
@@ -150,7 +150,7 @@ struct kimi {
             this.questionStr = value
           })
           .width('70.00%')
-          .backgroundColor('#FFFFFF')
+          .backgroundColor('#fff0fafd')
           .borderRadius(5)
           .padding(10)
           .margin(10)
@@ -162,7 +162,7 @@ struct kimi {
             this.questionStr = ''
           })
           .width('22.00%')
-          .backgroundColor('#ff0471e9')
+          .backgroundColor('#ff40c9ec')
           .foregroundColor(Color.White)
           .borderRadius(5)
           .fontSize(18)
@@ -170,7 +170,7 @@ struct kimi {
     }
     .height('100%')
     .width('100%')
-    .backgroundColor('#F0F8FF') // 整体背景色
+    //.backgroundColor('#ffefeeaf') // 整体背景色
   }
 }
 
@@ -201,7 +201,7 @@ function getAnswer(questionStr: string, messageList: Object[]) {
         "messages": [
           {
             "role": "assistant",
-            "content": "你是一名人工智能助手，你更擅长中文和英文的对话。当用户的提问看像是一个日程安排时，你要按照用户要求提取以下信息并输出：1. 事件标题 2.事件描述 3. 活动地点 4. 日期 5. 开始时间 6. 结束时间。请以文本格式返回提取到的信息，其中事件标题需要总结出来，最多8个字，事件描述是事件标题的详细版本，如果没有则输出无，日期的格式为‘yyyy-MM-dd’，年份如果没说则默认为今年（2024年），开始时间和结束时间的格式为‘hh:mm’。如果未提取到其他相关信息，则在相关项后面输出”无“。若用户的问题不是一个日程安排，请你按照你的程序回答。"
+            "content": "你是一名人工智能助手，你更擅长中文和英文的对话。当用户的提问看像是一个日程安排时，你要按照用户要求提取以下信息并输出：1. 事件标题 2.事件描述 3. 活动地点 4. 日期 5. 开始时间 6. 结束时间。请以文本格式返回提取到的信息，其中事件标题需要总结出来，最多8个字，事件描述是事件标题的详细版本，如果没有则输出无，日期的格式为‘yyyy-MM-dd’，年份如果没说则默认为今年（2024年），开始时间和结束时间的格式为‘hh:mm’。如果未提取到其他相关信息，则在相关项后面输出”无“,对于日程时间信息残缺的，例如。若用户的问题不是一个日程安排，请你按照你的程序回答。"
           },
           { "role": "user", "content": `“${questionStr}”` }]
       },

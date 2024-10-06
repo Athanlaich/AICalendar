@@ -21,6 +21,7 @@ struct EditAgenda {
   @State start: string = theTime.now()
   @State end: string = theTime.now()
   @State color: string = Schedule.COLORS[0]
+  @State clickColor: boolean = false //记录颜色是否选择
 
   aboutToAppear() {
     const params = router.getParams() as Record<string, string | number>;
@@ -29,7 +30,7 @@ struct EditAgenda {
       this.title = params.title as string || ''
       this.description = params.description as string || ''
       this.place = params.place as string || ''
-      this.color = params['color'] as string
+      this.color = params['color'] as string || ''
       this.date = params.date as string || theDate.today() // 如果没有提供日期参数，则使用今天的日期
       this.start = params.start as string || theTime.now() // 如果没有提供开始时间，则使用当前时间
       this.end = params.end as string || theTime.now() // 如果没有提供结束时间，则使用当前时间
@@ -40,15 +41,17 @@ struct EditAgenda {
 
   build() {
     Column({ space: 30 }) {
+      //编辑日程导航栏
       Row() {
         Text('编辑日程')
           .fontSize(30)
           .fontWeight(FontWeight.Bold)
           .margin({ left: 20 })
       }
-      .width('100%').height('7%').backgroundColor('#89AFE0')
+      .width('100%').height('7%').backgroundColor('#CAF4FF')
 
       //Divider().strokeWidth(2).color('#F1F3F5').lineCap(LineCapStyle.Round) //分割线
+      //日程名字
       Row({ space: 5 }) {
         Image($r('app.media.name'))
           .margin({ left: 20 })
@@ -65,6 +68,7 @@ struct EditAgenda {
           })
       }
 
+      //日程描述
       Row({ space: 5 }) {
         Image($r('app.media.description'))
           .margin({ left: 20 })
@@ -82,6 +86,7 @@ struct EditAgenda {
           })
       }
 
+      //日程地点
       Row({ space: 5 }) {
         Image($r('app.media.place'))
           .margin({ left: 20 })
@@ -98,6 +103,7 @@ struct EditAgenda {
           })
       }
 
+      //日期
       Row({ space: 10 }) {
         Text('日期:')
           .margin({ left: 20 })
@@ -109,6 +115,7 @@ struct EditAgenda {
           .layoutWeight(80)
       }
 
+      //时间
       Row({ space: 10 }) {
         Text('时间:')
           .margin({ left: 20 })
@@ -124,6 +131,7 @@ struct EditAgenda {
         .layoutWeight(80)
       }
 
+      //颜色
       Row() {
         Text('颜色:')
           .margin({ left: 20 })
@@ -134,12 +142,13 @@ struct EditAgenda {
         Row() {
           ForEach(Schedule.COLORS, (item: string, index: number) => {
             Circle()
-              .width(this.color == item ? 40 : 20)
-              .animation({ duration: 1000, curve: Curve.Ease })
+              .width(this.color == item ? 50 : 40)
+              .animation({ duration: 500, curve: Curve.Linear })
               .aspectRatio(1)
               .fill(item)
               .onClick(() => {
                 this.color = item
+                this.clickColor = true
               })
           })
         }
@@ -149,7 +158,8 @@ struct EditAgenda {
       }
       .height(40)
 
-      Blank(150)
+      Blank(120)
+      //取消和确认按钮
       Row() {
         Button('取消')
           .width(80)
@@ -175,39 +185,22 @@ struct EditAgenda {
     .width('100%')
   }
 
-  //检查日程是否冲突
-  async checkScheduleConflict(store: relationalStore.RdbStore, id: number, date: string, startTime: string,
-    endTime: string): Promise<boolean> {
-    //查询条件
-    let query =
-      "SELECT * FROM SCHEDULES WHERE (date == ? ) AND (ID!= ?) AND ((start <= ? AND ? < end) OR (start < ? AND ? <= end) OR (? <= start AND end <= ?))"; //冲突的三种条件
-    //查询参数
-    let params = [date, id, startTime, startTime, endTime, endTime, startTime, endTime];
-    try {
-      // 执行查询并等待结果
-      let result = await store.querySql(query, params);
-      // 检查结果
-      return result.rowCount > 0; //则冲突
-    } catch (error) {
-      console.error("查询出错:", error);
-      return false;
-    }
-  }
-
   //提交日程的函数
   private onSubmit(): void {
     if (this.title == '') {
-      promptAction.showToast({ message: '标题不能为空！', bottom: 200 })
+      promptAction.showToast({ message: '标题不能为空！', bottom: 210 })
       return
     }
     if (theTime.getHours(this.start) > theTime.getHours(this.end) ||
       (theTime.getHours(this.start) == theTime.getHours(this.end) &&
         theTime.getMinutes(this.start) >= theTime.getMinutes(this.end))) {
-      promptAction.showToast({ message: '时间不正确!', bottom: 200 })
+      promptAction.showToast({ message: '时间不正确!', bottom: 210 })
       return
     }
-
-    //const store: relationalStore.RdbStore = globalThis.store
+    if (this.clickColor == false) {
+      promptAction.showToast({ message: '颜色未选择！', bottom: 210 })
+      return
+    }
     const store: relationalStore.RdbStore = GlobalContext.getInstance().getStore() as relationalStore.RdbStore;
     if (!store || !store.update) { //如果store未初始化或 update 方法不可用，打印错误信息并结束函数执行
       console.error('Store is not initialized or update method is not available.');
@@ -224,6 +217,7 @@ struct EditAgenda {
       'END': this.end,
       'COLOR': this.color
     }
+    console.log('COLOR', this.color);
 
     //检查日程是否冲突
     this.checkScheduleConflict(store, this.ID, this.date, this.start, this.end)
@@ -243,7 +237,7 @@ struct EditAgenda {
                 return
               }
               console.info(`Succeeded in inserting data. rowId:${rowId}`) //rowId唯一地标识表中的一行记录
-              emitter.emit({ eventId: 0 })
+              emitter.emit({ eventId: 0 }) //通知页面更新
               router.back()
             })
           } else { //编辑(已有的日程)
@@ -255,7 +249,7 @@ struct EditAgenda {
                 return;
               }
               console.info(`Succeeded in updating data. rowId:${rowId}`);
-              emitter.emit({ eventId: 0 });
+              emitter.emit({ eventId: 0 }); //通知页面更新
               router.back();
             })
           }
@@ -263,5 +257,24 @@ struct EditAgenda {
       })
 
 
+  }
+
+  //检查日程是否冲突
+  async checkScheduleConflict(store: relationalStore.RdbStore, id: number, date: string, startTime: string,
+    endTime: string): Promise<boolean> {
+    //查询条件
+    let query =
+      "SELECT * FROM SCHEDULES WHERE (date == ? ) AND (ID!= ?) AND ((start <= ? AND ? < end) OR (start < ? AND ? <= end) OR (? <= start AND end <= ?))"; //冲突的三种条件
+    //查询参数
+    let params = [date, id, startTime, startTime, endTime, endTime, startTime, endTime];
+    try {
+      // 执行查询并等待结果
+      let result = await store.querySql(query, params);
+      // 检查结果
+      return result.rowCount > 0; //则冲突
+    } catch (error) {
+      console.error("查询出错:", error);
+      return false;
+    }
   }
 }
