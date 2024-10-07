@@ -15,7 +15,8 @@
 4. 智能提醒功能：事件开始前15分钟自动发送提醒。
 5. 模糊日程处理功能：智能分配合理时间长度，确保时间管理连贯性。
 
-具体项目文档见仓库内文件[`README/智能日程表开发设计文档.docx`](https://gitee.com/QinyaoHe/ai-calendar/blob/master/README/智能日程表开发设计文档.docx)，附有演示ppt[`README/智能日程表应用介绍.pptx`](https://gitee.com/QinyaoHe/ai-calendar/blob/master/README/智能日程表应用介绍.pptx)。
+
+具体项目文档见仓库内文件[智能日程表开发设计文档 .docx](https://gitee.com/QinyaoHe/ai-calendar/blob/master/README/%E6%99%BA%E8%83%BD%E6%97%A5%E7%A8%8B%E8%A1%A8%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3%20.docx)，演示ppt[智能日程表应用介绍.pptx](https://gitee.com/QinyaoHe/ai-calendar/blob/master/README/智能日程表应用介绍.pptx)。
 
 ## 概要说明
 背景
@@ -58,11 +59,17 @@
 5. 日程冲突检测功能：通过构造SQL查询，利用三种条件检查新添加的日程与数据库中已有的日程是否存在时间重叠。在检测到冲突时，通过`@ohos.promptAction`模块向用户展示提示信息，确保用户能够及时了解问题，并做出相应的调整。
 6. 通知栏快捷入口功能：使用了`@ohos.pasteboard`模块对用户的剪贴板进行监听，当监听到用户的剪贴板内容变化时进行发布通知。通过`@ohos.notificationManager`和`@ohos.app.ability.wantAgent`模块，实现了通过通知栏直接进入应用特定页面的功能。用户在复制通知内容到剪贴板后即可点击通知进入与AI智能助手对话的页面。
 7. 智能日程提醒功能：结合了`@ohos.data.relationalStore`和`@ohos.notificationManager`模块，通过定时器`setInterval`定期检查即将到来的日程，确保在日程开始前15分钟发出提醒。
+
 ## 业务流程图  
-添加日程
-[图片]
-## 删除日程
-[图片]
+
+![添加日程](https://gitee.com/QinyaoHe/ai-calendar/blob/master/README/images/%E6%B7%BB%E5%8A%A0%E6%97%A5%E7%A8%8B%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
+
+> 添加日程
+
+![删除日程](https://gitee.com/QinyaoHe/ai-calendar/blob/master/README/images/%E5%88%A0%E9%99%A4%E6%97%A5%E7%A8%8B%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
+
+> 删除日程
+
 ## 模块与功能实现
 #### 代码目录结构  
 
@@ -115,36 +122,3 @@
 - 日期模型 theDate.ets：包含对日期的所有处理，例如获取今天的日期、返回指定日期所在周的七天等。
 - 时间模型 theTime.ets：包含对时间的所有处理，例如获取当前的时间、计算两个时间之间的时间间隔等。
 - 日程模型 agendaStruct.ets：定义日程的基本属性（如标题、时间、描述等）。
-
-#### 软件架构
-软件架构说明
-
-
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
