@@ -6,7 +6,7 @@ export struct TimeSelector {
   @Link selectedTime: string
   @State timePressed: boolean = false // 记录时间选择器的按下状态
   dialogController: CustomDialogController = new CustomDialogController({
-    builder: CustomDialogExample({selectedTime: $selectedTime}),
+    builder: TimeSelectDialog({selectedTime: $selectedTime}),
   })
 
   build() {
@@ -30,7 +30,7 @@ export struct TimeSelector {
 }
 
 @CustomDialog
-struct CustomDialogExample {
+struct TimeSelectDialog {
   @Link selectedTime: string
   private selectingTime: Date = new Date("1000-01-01 " + this.selectedTime)
   controller: CustomDialogController
