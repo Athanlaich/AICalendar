@@ -323,7 +323,7 @@ function insertScheduleToDB(data: ScheduleData) {
     'DATE': data.date,
     'START': data.start,
     'END': data.end,
-    'COLOR': '#FF2A6AD2'
+    'COLOR': '#ffaa88ff'
   }
   store.insert('SCHEDULES', valueBucket, (err, rowId) => {
     if (err) {

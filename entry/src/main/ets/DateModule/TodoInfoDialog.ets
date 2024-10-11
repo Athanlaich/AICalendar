@@ -58,7 +58,7 @@ export struct TodoInfoDialog { //日程信息弹窗
                 }
               })
           })
-        Image($r('app.media.edit'))//删除
+        Image($r('app.media.edit'))//编辑
           .width('16%')
           .height(35)
           .interpolation(ImageInterpolation.High)
